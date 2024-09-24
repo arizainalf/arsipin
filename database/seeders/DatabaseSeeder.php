@@ -43,13 +43,10 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        $loker = [[
+        $loker = [
             'uuid' => Uuid::uuid4()->toString(),
             'nama' => 'Keluar',
-        ],[
-            'uuid' => Uuid::uuid4()->toString(),
-            'nama' => 'Lunas',
-        ]];
+        ];
 
         DB::table('lokers')->insert($loker);
     }
