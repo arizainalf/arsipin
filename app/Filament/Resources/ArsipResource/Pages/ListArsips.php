@@ -2,9 +2,14 @@
 
 namespace App\Filament\Resources\ArsipResource\Pages;
 
+use App\Models\Arsip;
+use App\Models\Loker;
 use Filament\Actions;
 use App\Imports\ArsipImport;
+use Filament\Actions\Action;
+use Filament\Forms\Components\Select;
 use App\Filament\Resources\ArsipResource;
+use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Pages\ListRecords;
 
 class ListArsips extends ListRecords
@@ -20,9 +25,34 @@ class ListArsips extends ListRecords
                 ->color("success")
                 ->use(ArsipImport::class),
             Actions\CreateAction::make()
-            ->icon("heroicon-o-plus")
-            ->color("primary")
-            ->successRedirectUrl(url('/arsip/')),
+                ->icon("heroicon-o-plus")
+                ->color("primary")
+                ->successRedirectUrl(url('/arsip/')),
+            Action::make('editLoker')
+                ->label('Edit Loker')
+                ->icon('heroicon-o-pencil')
+                ->action(function (array $data) {
+                    // Mendefinisikan tanggal mulai dan selesai dari form input
+                    $tanggalMulai = $data['tanggal_mulai'];
+                    $tanggalSelesai = $data['tanggal_selesai'];
+
+                    // Memperbarui loker_id berdasarkan tanggal
+                    Arsip::whereBetween('tanggal_mulai', [$tanggalMulai, $tanggalSelesai])
+                        ->update(['loker_id' => $data['loker_id']]);
+                })
+                ->form([
+                    DatePicker::make('tanggal_mulai')
+                        ->label('TANGGAL MULAI')
+                        ->required(),
+                    DatePicker::make('tanggal_selesai')
+                        ->label('TANGGAL SELESAI')
+                        ->required(),
+                    Select::make('loker_id')
+                        ->label('Loker')
+                        ->options(Loker::all()->pluck('nama', 'id'))
+                        ->required(),
+                ])
+                ->requiresConfirmation(),
         ];
     }
 }
