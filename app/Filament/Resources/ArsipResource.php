@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use stdClass;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Arsip;
@@ -15,6 +16,7 @@ use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -93,9 +95,28 @@ class ArsipResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('index')->getStateUsing(
+                    static function (stdClass $rowLoop, HasTable $livewire): string {
+                        return (string) (
+                            $rowLoop->iteration +
+                            ($livewire->tableRecordsPerPage * (
+                                $livewire->getPage() - 1
+                            ))
+                        );
+                    }
+                )
+                    ->label('No.'),
                 Tables\Columns\TextColumn::make('loker.nama')
                     ->label('LOKER')
-                    ->sortable(),
+                    ->sortable()
+                    ->badge()
+                    ->color(function (string $state): string {
+                        if ($state === 'Keluar') {
+                            return 'danger';
+                        } else {
+                            return 'success';
+                        }
+                    }),
                 Tables\Columns\TextColumn::make('kode')
                     ->label('KODE')
                     ->searchable()
@@ -119,14 +140,14 @@ class ArsipResource extends Resource
                 TextColumn::make('status')
                     ->label('STATUS')
                     ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        '0' => 'warning',
+                        '1' => 'success',
+                    })
                     ->formatStateUsing(fn(string $state): string => match ($state) {
                         '0' => 'Belum Lunas',
                         '1' => 'Lunas',
                         default => $state,
-                    })
-                    ->color(fn(string $state): string => match ($state) {
-                        '0' => 'warning',
-                        '1' => 'success',
                     })
                     ->sortable()
                     ->searchable(),

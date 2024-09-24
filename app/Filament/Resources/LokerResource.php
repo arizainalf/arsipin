@@ -2,15 +2,18 @@
 
 namespace App\Filament\Resources;
 
+use stdClass;
+use Filament\Forms;
+use Filament\Tables;
+use App\Models\Loker;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Actions\ActionGroup;
 use App\Filament\Resources\LokerResource\Pages;
 use App\Filament\Resources\LokerResource\RelationManagers;
-use App\Models\Loker;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Table;
 
 class LokerResource extends Resource
 {
@@ -42,6 +45,17 @@ class LokerResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('index')->getStateUsing(
+                    static function (stdClass $rowLoop, HasTable $livewire): string {
+                        return (string) (
+                            $rowLoop->iteration +
+                            ($livewire->tableRecordsPerPage * (
+                                $livewire->getPage() - 1
+                            ))
+                        );
+                    }
+                )
+                    ->label('No.'),
                 Tables\Columns\TextColumn::make('nama')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')

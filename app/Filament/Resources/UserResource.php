@@ -2,14 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
-use App\Models\User;
+use stdClass;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use App\Models\User;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
 use Spatie\Permission\Models\Role;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Contracts\HasTable;
+use App\Filament\Resources\UserResource\Pages;
 
 class UserResource extends Resource
 {
@@ -45,6 +48,17 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('index')->getStateUsing(
+                    static function (stdClass $rowLoop, HasTable $livewire): string {
+                        return (string) (
+                            $rowLoop->iteration +
+                            ($livewire->tableRecordsPerPage * (
+                                $livewire->getPage() - 1
+                            ))
+                        );
+                    }
+                )
+                    ->label('No.'),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
