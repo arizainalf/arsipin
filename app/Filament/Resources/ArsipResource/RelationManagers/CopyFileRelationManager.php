@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CopyFileRelationManager extends RelationManager
 {
-    protected static string $relationship = 'copyFile';
+    protected static string $relationship = 'copyFiles';
 
     public function form(Form $form): Form
     {

@@ -3,6 +3,8 @@
 namespace App\Imports;
 
 use App\Models\Arsip;
+use Ramsey\Uuid\Uuid;
+use App\Models\Riwayat;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToModel;
@@ -37,7 +39,7 @@ class ArsipImport implements ToModel, WithHeadingRow
             $status = '0';  
         }
         
-        return new Arsip([
+        $arsip = Arsip::create([
             'kode' => $kode,
             'cif' => $row['cif'],
             'nama_lengkap' => $row['short_name'],
@@ -45,5 +47,14 @@ class ArsipImport implements ToModel, WithHeadingRow
             'tanggal_selesai' => $tanggal_selesai,
             'status' => $status,
         ]);
+
+        $riwayat = Riwayat::create([
+            'arsip_id' => $arsip->id,
+            'jenis' => 'Masuk',
+            'tanggal' => $tanggal_masuk,
+            'catatan' => 'Arsip Masuk',
+        ]);
+
+        return $arsip;
     }
 }

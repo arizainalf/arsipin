@@ -6,7 +6,7 @@ return [
         'slug' => 'shield/roles',
         'navigation_label' => 'Roles',
         'navigation_icon' => 'heroicon-o-shield-check',
-        'navigation_sort' => 3,
+        'navigation_sort' => 4,
         'navigation_badge' => true,
         'navigation_group' => false,
         'is_globally_searchable' => false,

@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use App\Models\Loker;
-use App\Models\KeluarMasuk;
-use Illuminate\Database\Eloquent\Model;
 use Ramsey\Uuid\Uuid;
+use App\Models\Riwayat;
+use App\Models\CopyFiles;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Arsip extends Model
@@ -19,11 +20,11 @@ class Arsip extends Model
     }
 
     public function copyFiles(){
-        return $this->hasMany(CopyFile::class);
+        return $this->hasMany(CopyFiles::class);
     }
 
-    public function keluarMasuks(){
-        return $this->hasMany(KeluarMasuk::class);
+    public function riwayats(){
+        return $this->hasMany(Riwayat::class);
     }
 
     public static function boot()

@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('keluar_masuks', function (Blueprint $table) {
+        Schema::create('riwayats', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
             $table->unsignedBigInteger('arsip_id');
-            $table->date('tanggal_masuk');
-            $table->date('tanggal_keluar');
+            $table->enum('jenis',['Masuk','Keluar']);
+            $table->date('tanggal');
+            $table->string('catatan')->nullable();
             $table->timestamps();
 
             $table->foreign('arsip_id')->references('id')->on('arsips')->onDelete('cascade');

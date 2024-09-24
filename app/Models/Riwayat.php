@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class KeluarMasuk extends Model
+class Riwayat extends Model
 {
     use HasFactory;
 
