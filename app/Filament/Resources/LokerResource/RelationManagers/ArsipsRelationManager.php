@@ -2,31 +2,34 @@
 
 namespace App\Filament\Resources\LokerResource\RelationManagers;
 
-use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use stdClass;
 
 class ArsipsRelationManager extends RelationManager
 {
     protected static string $relationship = 'arsips';
-
-    public function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('nama_lengkap')
-                    ->required()
-                    ->maxLength(255),
-            ]);
-    }
 
     public function table(Table $table): Table
     {
         return $table
             ->recordTitleAttribute('nama_lengkap')
             ->columns([
+                TextColumn::make('index')->getStateUsing(
+                    static function (stdClass $rowLoop, HasTable $livewire): string {
+                        // Continue the numbering across pages
+                        return (string) (
+                            $rowLoop->iteration +
+                            ($livewire->tableRecordsPerPage * (
+                                $livewire->getTablePage() - 1
+                            ))
+                        );
+                    }
+                )
+                    ->label('No.'),
                 Tables\Columns\TextColumn::make('kode')
                     ->searchable()
                     ->sortable(),
@@ -58,6 +61,7 @@ class ArsipsRelationManager extends RelationManager
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->paginated([100, 'all']);
     }
 }

@@ -27,6 +27,7 @@ class ListArsips extends ListRecords
             Actions\CreateAction::make()
                 ->icon("heroicon-o-plus")
                 ->color("primary")
+                
                 ->successRedirectUrl(url('/arsip/')),
             Action::make('editLoker')
                 ->label('Edit Loker')
@@ -42,10 +43,10 @@ class ListArsips extends ListRecords
                 })
                 ->form([
                     DatePicker::make('tanggal_mulai')
-                        ->label('TANGGAL MULAI')
+                        ->label('Tgl. Mulai')
                         ->required(),
                     DatePicker::make('tanggal_selesai')
-                        ->label('TANGGAL SELESAI')
+                        ->label('Tgl. Selesai')
                         ->required(),
                     Select::make('loker_id')
                         ->label('Loker')

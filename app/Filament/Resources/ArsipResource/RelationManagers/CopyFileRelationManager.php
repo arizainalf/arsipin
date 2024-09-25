@@ -3,12 +3,15 @@
 namespace App\Filament\Resources\ArsipResource\RelationManagers;
 
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Support\Facades\Storage;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Forms\Components\FileUpload;
+use Filament\Resources\RelationManagers\RelationManager;
 
 class CopyFileRelationManager extends RelationManager
 {
@@ -21,6 +24,18 @@ class CopyFileRelationManager extends RelationManager
                 Forms\Components\TextInput::make('nama')
                     ->required()
                     ->maxLength(255),
+                Select::make('jenis')
+                    ->options([
+                        'Asli' => 'Asli',
+                        'Copy' => 'Copy',
+                    ])
+                    ->required()
+                    ->default('Copy'),
+                FileUpload::make('gambar')
+                    ->image()
+                    ->directory('copy-files')
+                    ->maxSize(1024),
+
             ]);
     }
 
@@ -30,6 +45,16 @@ class CopyFileRelationManager extends RelationManager
             ->recordTitleAttribute('nama')
             ->columns([
                 Tables\Columns\TextColumn::make('nama'),
+                Tables\Columns\TextColumn::make('jenis')
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'Asli' => 'success',
+                        'Copy' => 'primary',
+                    }),
+                ImageColumn::make('gambar')
+                    ->label('Gambar')
+                    ->url(fn($record) => $record->gambar ? Storage::url($record->gambar) : null)
+                    ->width(200),
             ])
             ->filters([
                 //

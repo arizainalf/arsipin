@@ -2,29 +2,30 @@
 
 namespace App\Filament\Resources;
 
-use stdClass;
-use Filament\Forms;
-use Filament\Tables;
+use App\Filament\Resources\ArsipResource\Pages;
+use App\Filament\Resources\ArsipResource\RelationManagers\CopyFileRelationManager;
 use App\Models\Arsip;
 use App\Models\Loker;
 use App\Models\Riwayat;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Illuminate\Support\Carbon;
-use Filament\Resources\Resource;
-use Filament\Tables\Actions\Action;
+use Filament\Forms;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Form;
+use Filament\Notifications\Events\DatabaseNotificationsSent;
+use Filament\Notifications\Notification;
+use Filament\Resources\Resource;
+use Filament\Support\Enums\MaxWidth;
+use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Contracts\HasTable;
-use Illuminate\Database\Eloquent\Model;
-use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
-use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Resources\ArsipResource\Pages;
-use Filament\Notifications\Events\DatabaseNotificationsSent;
-use App\Filament\Resources\ArsipResource\RelationManagers\CopyFileRelationManager;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
+use stdClass;
 
 class ArsipResource extends Resource
 {
@@ -43,11 +44,12 @@ class ArsipResource extends Resource
     {
         return [
             'CIF' => $record->cif,
-            'Nama' => $record->nama_lengkap,
-            'Kode' => $record->kode,
+            'No. Pinjaman' => $record->kode,
             'Loker' => $record->loker ? $record->loker->nama : 'N/A',
         ];
     }
+
+    protected static ?string $recordTitleAttribute = 'nama_lengkap';
 
     public static function getGloballySearchableAttributes(): array
     {
@@ -68,17 +70,22 @@ class ArsipResource extends Resource
                         ->options(Loker::all()->pluck('nama', 'id'))
                         ->searchable(),
                     Forms\Components\TextInput::make('kode')
+                        ->label('No. Pinjaman')
                         ->required()
                         ->maxLength(255),
                     Forms\Components\TextInput::make('cif')
+                        ->label('CIF')
                         ->required()
                         ->maxLength(255),
                     Forms\Components\TextInput::make('nama_lengkap')
+                        ->label('Nama')
                         ->required()
                         ->maxLength(255),
                     Forms\Components\DatePicker::make('tanggal_mulai')
+                        ->label('Tgl. Mulai')
                         ->required(),
                     Forms\Components\DatePicker::make('tanggal_selesai')
+                        ->label('Tgl. Selesai')
                         ->required(),
                     Select::make('status')
                         ->label('Status')
@@ -107,7 +114,7 @@ class ArsipResource extends Resource
                 )
                     ->label('No.'),
                 Tables\Columns\TextColumn::make('loker.nama')
-                    ->label('LOKER')
+                    ->label('Loker')
                     ->sortable()
                     ->badge()
                     ->color(function (string $state): string {
@@ -118,7 +125,7 @@ class ArsipResource extends Resource
                         }
                     }),
                 Tables\Columns\TextColumn::make('kode')
-                    ->label('KODE')
+                    ->label('No. Pinjaman')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('cif')
@@ -126,19 +133,19 @@ class ArsipResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('nama_lengkap')
-                    ->label('NAMA LENGKAP')
+                    ->label('Nama')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tanggal_mulai')
-                    ->label('TANGGAL MULAI')
+                    ->label('Tgl. Mulai')
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tanggal_selesai')
-                    ->label('TANGGAL SELESAI')
+                    ->label('Tgl. Selesai')
                     ->date()
                     ->sortable(),
                 TextColumn::make('status')
-                    ->label('STATUS')
+                    ->label('Status')
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
                         '0' => 'warning',
@@ -165,10 +172,10 @@ class ArsipResource extends Resource
                         ->label('Arsip Keluar')
                         ->icon('heroicon-o-arrow-left-on-rectangle')
                         ->form([
-                            TextInput::make('catatan')
+                            Textarea::make('catatan')
                                 ->label('Keterangan')
-                                ->required()
-                                ->maxLength(255),
+                                ->rows(5)
+                                ->cols(5),
                         ])
                         ->action(function (Arsip $record, array $data) {
                             Riwayat::create([
@@ -178,7 +185,7 @@ class ArsipResource extends Resource
                                 'tanggal' => Carbon::now(),
                             ]);
                             $loker = Loker::where('nama', 'Keluar')->first();
-                            $record->update(['loker_id' => $loker->id ]);
+                            $record->update(['loker_id' => $loker->id]);
                             $recipient = auth()->user();
                             Notification::make()
                                 ->title('Arsip Keluar')
@@ -188,7 +195,8 @@ class ArsipResource extends Resource
                             $recipient->save();
                         })
                         ->color('danger')
-                        ->visible(fn (Arsip $record) => !Riwayat::where('arsip_id', $record->id)->where('jenis', 'Keluar')->exists()),
+                        ->modalWidth(MaxWidth::ExtraLarge)
+                        ->visible(fn(Arsip $record) => !Riwayat::where('arsip_id', $record->id)->where('jenis', 'Keluar')->exists()),
                     Action::make('markAsPaid')
                         ->label('Lunas Topup')
                         ->action(function ($record) {
@@ -199,7 +207,7 @@ class ArsipResource extends Resource
                             $recipient = auth()->user();
                             Notification::make()
                                 ->title('Arsip Lunas!')
-                                ->body('Arsip : ' . $record->kode . ' - ' . $record->nama_lurator . ' lunas')
+                                ->body('Arsip : ' . $record->kode . ' - ' . $record->nama_lengkap . ' lunas')
                                 ->sendToDatabase($recipient);
                             event(new DatabaseNotificationsSent($recipient));
                             $recipient->save();
@@ -227,6 +235,7 @@ class ArsipResource extends Resource
                         }),
                     BulkAction::make('editPelunasan')
                         ->label('Belum Lunas')
+                        ->icon('heroicon-o-x-circle')
                         ->action(function ($records) {
                             $recordIds = $records->pluck('id')->toArray();
                             Arsip::whereIn('id', $recordIds)->update(['status' => '0']);
