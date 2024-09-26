@@ -23,8 +23,17 @@ class CopyFileRelationManager extends RelationManager
             ->schema([
                 Forms\Components\TextInput::make('nama')
                     ->required()
+                    ->helperText('KTP, NPWP, SK, dll')
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('keterangan')
+                    ->label('No. Data')
+                    ->helperText('No. Data (KTP, NPWP, SK, dll)')
+                    ->copyable()
+                    ->copyMessage('No. Data Telah di Copy')
+                    ->copyMessageDuration(1500)
                     ->maxLength(255),
                 Select::make('jenis')
+                ->helperText('Asli atau Copy')
                     ->options([
                         'Asli' => 'Asli',
                         'Copy' => 'Copy',
@@ -33,6 +42,7 @@ class CopyFileRelationManager extends RelationManager
                     ->default('Copy'),
                 FileUpload::make('gambar')
                     ->image()
+                    ->helperText('Kosongkan jika tidak diisi')
                     ->directory('copy-files')
                     ->maxSize(1024),
 
@@ -45,6 +55,8 @@ class CopyFileRelationManager extends RelationManager
             ->recordTitleAttribute('nama')
             ->columns([
                 Tables\Columns\TextColumn::make('nama'),
+                Tables\Columns\TextColumn::make('keterangan')
+                    ->label('No. Data'),
                 Tables\Columns\TextColumn::make('jenis')
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
@@ -53,8 +65,9 @@ class CopyFileRelationManager extends RelationManager
                     }),
                 ImageColumn::make('gambar')
                     ->label('Gambar')
+                    ->defaultImageUrl(url('storage/images/placeholder.png'))
                     ->url(fn($record) => $record->gambar ? Storage::url($record->gambar) : null)
-                    ->width(200),
+                    ->height(200),
             ])
             ->filters([
                 //

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->uuid('uuid')->unique();
             $table->unsignedBigInteger('arsip_id');
             $table->string('nama');
+            $table->string('keterangan')->nullable();
             $table->enum('jenis',['Asli','Copy']);
             $table->string('gambar')->nullable();
             $table->timestamps();
