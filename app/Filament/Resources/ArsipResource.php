@@ -2,30 +2,31 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ArsipResource\Pages;
-use App\Filament\Resources\ArsipResource\RelationManagers\CopyFileRelationManager;
+use stdClass;
+use Filament\Forms;
+use Filament\Tables;
 use App\Models\Arsip;
 use App\Models\Loker;
 use App\Models\Riwayat;
-use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Illuminate\Support\Carbon;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Form;
-use Filament\Notifications\Events\DatabaseNotificationsSent;
-use Filament\Notifications\Notification;
-use Filament\Resources\Resource;
-use Filament\Support\Enums\MaxWidth;
-use Filament\Tables;
-use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Contracts\HasTable;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
-use stdClass;
+use Filament\Notifications\Notification;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Enums\FiltersLayout;
+use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\ArsipResource\Pages;
+use Filament\Notifications\Events\DatabaseNotificationsSent;
+use App\Filament\Resources\ArsipResource\RelationManagers\CopyFileRelationManager;
 
 class ArsipResource extends Resource
 {
@@ -168,7 +169,7 @@ class ArsipResource extends Resource
                     ->label('Loker')
                     ->options(Loker::all()->pluck('nama', 'id'))
                     ->searchable(),
-            ])
+            ], layout: FiltersLayout::AboveContent)
             ->actions([
                 ActionGroup::make([
                     Action::make('keluar')
