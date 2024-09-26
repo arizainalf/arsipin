@@ -164,7 +164,10 @@ class ArsipResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('loker_id')
+                    ->label('Loker')
+                    ->options(Loker::all()->pluck('nama', 'id'))
+                    ->searchable(),
             ])
             ->actions([
                 ActionGroup::make([
@@ -261,7 +264,7 @@ class ArsipResource extends Resource
                         ->requiresConfirmation()
                         ->deselectRecordsAfterCompletion(),
                 ])
-                ->color('warning'),
+                    ->color('warning'),
             ])
             ->paginated([50, 100, 'all']);
 
