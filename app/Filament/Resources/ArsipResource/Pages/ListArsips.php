@@ -2,15 +2,15 @@
 
 namespace App\Filament\Resources\ArsipResource\Pages;
 
+use App\Filament\Resources\ArsipResource;
+use App\Imports\ArsipImport;
 use App\Models\Arsip;
 use App\Models\Loker;
 use Filament\Actions;
-use App\Imports\ArsipImport;
 use Filament\Actions\Action;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
-use App\Filament\Resources\ArsipResource;
-use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Pages\ListRecords;
 
 class ListArsips extends ListRecords
@@ -51,10 +51,12 @@ class ListArsips extends ListRecords
                     Arsip::whereBetween('tanggal_mulai', [$tanggalMulai, $tanggalSelesai])
                         ->update(['loker_id' => $data['loker_id']]);
                     // Menampilkan notifikasi setelah update berhasil
+                    $loker = Loker::find($data['loker_id']);
                     Notification::make()
-            ->title('Saved successfully')
-            ->success()
-            ->send();
+                        ->title('Update Berhasil')
+                        ->body('Berhasil mengupdate Loker ke ' . $loker->nama)
+                        ->success()
+                        ->send();
 
                     // Reload halaman setelah aksi berhasil
                     $this->redirect($this->getResource()::getUrl('index'));
