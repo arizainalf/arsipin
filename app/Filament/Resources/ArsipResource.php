@@ -228,13 +228,17 @@ class ArsipResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                     BulkAction::make('editStatus')
                         ->label('Lunas Topup')
+                        ->color('success')
+                        ->icon('heroicon-o-check-circle')
+                        ->modalWidth(MaxWidth::ExtraLarge)
                         ->action(function ($records) {
                             $recordIds = $records->pluck('id')->toArray();
                             Arsip::whereIn('id', $recordIds)->update(['status' => '1']);
-
                         }),
                     BulkAction::make('editPelunasan')
                         ->label('Belum Lunas')
+                        ->modalWidth(MaxWidth::ExtraLarge)
+                        ->color('danger')
                         ->icon('heroicon-o-x-circle')
                         ->action(function ($records) {
                             $recordIds = $records->pluck('id')->toArray();
@@ -242,6 +246,7 @@ class ArsipResource extends Resource
                         }),
                     BulkAction::make('editLoker')
                         ->label('Edit Loker')
+                        ->color('warning')
                         ->icon('heroicon-o-pencil')
                         ->action(function ($records, array $data) {
                             $recordIds = $records->pluck('id')->toArray();
@@ -255,7 +260,8 @@ class ArsipResource extends Resource
                         ])
                         ->requiresConfirmation()
                         ->deselectRecordsAfterCompletion(),
-                ]),
+                ])
+                ->color('warning'),
             ])
             ->paginated([50, 100, 'all']);
 

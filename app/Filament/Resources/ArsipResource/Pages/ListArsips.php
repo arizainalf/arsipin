@@ -31,6 +31,7 @@ class ListArsips extends ListRecords
                 ->successRedirectUrl(url('/arsip/')),
             Action::make('editLoker')
                 ->label('Edit Loker')
+                ->color('warning')
                 ->icon('heroicon-o-pencil')
                 ->action(function (array $data) {
                     // Mendefinisikan tanggal mulai dan selesai dari form input
