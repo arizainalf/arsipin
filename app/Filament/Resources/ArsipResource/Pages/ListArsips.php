@@ -2,14 +2,14 @@
 
 namespace App\Filament\Resources\ArsipResource\Pages;
 
+use App\Filament\Resources\ArsipResource;
+use App\Imports\ArsipImport;
 use App\Models\Arsip;
 use App\Models\Loker;
 use Filament\Actions;
-use App\Imports\ArsipImport;
 use Filament\Actions\Action;
-use Filament\Forms\Components\Select;
-use App\Filament\Resources\ArsipResource;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Resources\Pages\ListRecords;
 
 class ListArsips extends ListRecords
@@ -27,8 +27,19 @@ class ListArsips extends ListRecords
             Actions\CreateAction::make()
                 ->icon("heroicon-o-plus")
                 ->color("primary")
-                
-                ->successRedirectUrl(url('/arsip/')),
+                ->successRedirectUrl(url('/arsip/'))
+                ->after(function ($arsip) {
+                    // Pastikan tanggal masuk sesuai dengan kebutuhan Anda
+                    $tanggal_masuk = now();
+
+                    // Membuat catatan riwayat
+                    $riwayat = Riwayat::create([
+                        'arsip_id' => $arsip->id,
+                        'jenis' => 'Masuk',
+                        'tanggal' => $tanggal_masuk,
+                        'catatan' => 'Arsip Masuk',
+                    ]);
+                }),
             Action::make('editLoker')
                 ->label('Edit Loker')
                 ->color('warning')
