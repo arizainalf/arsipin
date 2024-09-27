@@ -28,7 +28,6 @@ class CopyFileRelationManager extends RelationManager
                 Forms\Components\TextInput::make('keterangan')
                     ->label('No. Data')
                     ->helperText('No. Data (KTP, NPWP, SK, dll)')
-                    ->copyable()
                     ->copyMessage('No. Data Telah di Copy')
                     ->copyMessageDuration(1500)
                     ->maxLength(255),

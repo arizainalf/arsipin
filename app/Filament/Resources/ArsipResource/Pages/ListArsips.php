@@ -50,15 +50,12 @@ class ListArsips extends ListRecords
                     $tanggalSelesai = $data['tanggal_selesai'];
                     Arsip::whereBetween('tanggal_mulai', [$tanggalMulai, $tanggalSelesai])
                         ->update(['loker_id' => $data['loker_id']]);
-                    // Menampilkan notifikasi setelah update berhasil
                     $loker = Loker::find($data['loker_id']);
                     Notification::make()
                         ->title('Update Berhasil')
                         ->body('Berhasil mengupdate Loker ke ' . $loker->nama)
                         ->success()
                         ->send();
-
-                    // Reload halaman setelah aksi berhasil
                     $this->redirect($this->getResource()::getUrl('index'));
                 })
                 ->form([
