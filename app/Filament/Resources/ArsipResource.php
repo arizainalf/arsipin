@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Support\Carbon;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Filters\Filter;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -20,6 +21,7 @@ use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Enums\FiltersLayout;
@@ -169,6 +171,22 @@ class ArsipResource extends Resource
                     ->label('Loker')
                     ->options(Loker::all()->pluck('nama', 'id'))
                     ->searchable(),
+                Filter::make('name')
+                    ->form([
+                        TextInput::make('names')
+                            ->label('Cari Nama')
+                            ->placeholder('Masukkan nama, pisahkan dengan koma'),
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        if (!empty($data['names'])) {
+                            $names = explode(',', $data['names']);
+                            $query->where(function ($query) use ($names) {
+                                foreach ($names as $name) {
+                                    $query->orWhere('nama_lengkap', 'like', '%' . trim($name) . '%');
+                                }
+                            });
+                        }
+                    }),
             ], layout: FiltersLayout::AboveContent)
             ->actions([
                 ActionGroup::make([

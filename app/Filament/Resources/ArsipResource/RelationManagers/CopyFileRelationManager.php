@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Forms\Components\FileUpload;
 use Filament\Resources\RelationManagers\RelationManager;
+use Webbingbrasil\FilamentCopyActions\Tables\CopyableTextColumn;
 
 class CopyFileRelationManager extends RelationManager
 {
@@ -28,8 +29,6 @@ class CopyFileRelationManager extends RelationManager
                 Forms\Components\TextInput::make('keterangan')
                     ->label('No. Data')
                     ->helperText('No. Data (KTP, NPWP, SK, dll)')
-                    ->copyMessage('No. Data Telah di Copy')
-                    ->copyMessageDuration(1500)
                     ->maxLength(255),
                 Select::make('jenis')
                 ->helperText('Asli atau Copy')
@@ -54,8 +53,12 @@ class CopyFileRelationManager extends RelationManager
             ->recordTitleAttribute('nama')
             ->columns([
                 Tables\Columns\TextColumn::make('nama'),
-                Tables\Columns\TextColumn::make('keterangan')
-                    ->label('No. Data'),
+                CopyableTextColumn::make('Keterangan')
+                    ->label('No. Data')
+                ->successMessage('No. Data Berhasil di salin di clipboard')
+                ->searchable()
+                ->sortable()
+                ->toggleable(),
                 Tables\Columns\TextColumn::make('jenis')
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
