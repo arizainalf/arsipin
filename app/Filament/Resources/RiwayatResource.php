@@ -2,21 +2,16 @@
 
 namespace App\Filament\Resources;
 
-use stdClass;
-use Filament\Forms;
-use Filament\Tables;
+use App\Filament\Resources\RiwayatResource\Pages;
 use App\Models\Riwayat;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
-use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Resources\RiwayatResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\RiwayatResource\RelationManagers;
+use Filament\Tables\Table;
+use stdClass;
 
 class RiwayatResource extends Resource
 {
@@ -78,16 +73,31 @@ class RiwayatResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ])->actions([
+            Tables\Actions\DeleteAction::make()
+                ->before(function (Riwayat $record) {
+                    // Logika yang dijalankan sebelum menghapus record
+                    $record->update([
+                        'loker_id' => null,
+                    ]);
+                })
+                ->after(function (Riwayat $record) {
+                    Notification::make()
+                        ->title('Riwayat Berhasil Dihapus')
+                        ->success();
+                })
+                ->requiresConfirmation()
+                ->visible(fn (Riwayat $record): bool => $record->jenis ==='Keluar' ),
+        ])
             ->filters([
                 SelectFilter::make('jenis')
-                ->label('Jenis')
-                ->options([
-                    'Keluar' => 'Keluar',
-                    'Masuk' => 'Masuk',
-                ])
-                ], layout: FiltersLayout::AboveContent)
-                ->paginated([50, 100, 'all']);
+                    ->label('Jenis')
+                    ->options([
+                        'Keluar' => 'Keluar',
+                        'Masuk' => 'Masuk',
+                    ]),
+            ], layout: FiltersLayout::AboveContent)
+            ->paginated([50, 100, 'all']);
     }
 
     public static function getRelations(): array

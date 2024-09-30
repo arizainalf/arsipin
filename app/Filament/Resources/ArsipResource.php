@@ -48,6 +48,8 @@ class ArsipResource extends Resource
         return [
             'CIF' => $record->cif,
             'No. Pinjaman' => $record->kode,
+            'Tanggal Mulai' => $record->tanggal_mulai,
+            'Status' => $record->status === '1' ? 'Lunas' : 'Belum Lunas',
             'Loker' => $record->loker ? $record->loker->nama : 'N/A',
         ];
     }
@@ -56,7 +58,7 @@ class ArsipResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['cif', 'kode', 'nama_lengkap'];
+        return ['cif', 'kode', 'nama_lengkap','tanggal_mulai'];
     }
 
     protected static ?string $slug = 'arsip';
