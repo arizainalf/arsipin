@@ -2,16 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\RiwayatResource\Pages;
-use App\Models\Riwayat;
-use Filament\Resources\Resource;
+use stdClass;
 use Filament\Tables;
+use App\Models\Arsip;
+use App\Models\Loker;
+use App\Models\Riwayat;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Contracts\HasTable;
+use Filament\Notifications\Notification;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Table;
-use stdClass;
+use App\Filament\Resources\RiwayatResource\Pages;
 
 class RiwayatResource extends Resource
 {
@@ -77,7 +80,8 @@ class RiwayatResource extends Resource
             Tables\Actions\DeleteAction::make()
                 ->before(function (Riwayat $record) {
                     // Logika yang dijalankan sebelum menghapus record
-                    $record->update([
+                    $arsip = Arsip::find($record->arsip_id);
+                    $arsip->update([
                         'loker_id' => null,
                     ]);
                 })
