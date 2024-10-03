@@ -2,33 +2,33 @@
 
 namespace App\Filament\Resources;
 
-use stdClass;
-use Filament\Forms;
-use Filament\Tables;
+use App\Filament\Resources\ArsipResource\Pages;
+use App\Filament\Resources\ArsipResource\RelationManagers\CopyFileRelationManager;
 use App\Models\Arsip;
 use App\Models\Loker;
 use App\Models\Riwayat;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Illuminate\Support\Carbon;
-use Filament\Resources\Resource;
-use Filament\Tables\Actions\Action;
-use Filament\Tables\Filters\Filter;
-use Filament\Support\Enums\MaxWidth;
+use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Notifications\Events\DatabaseNotificationsSent;
+use Filament\Notifications\Notification;
+use Filament\Resources\Resource;
+use Filament\Support\Enums\MaxWidth;
+use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Contracts\HasTable;
-use Illuminate\Database\Eloquent\Model;
-use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
-use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Resources\ArsipResource\Pages;
-use Filament\Notifications\Events\DatabaseNotificationsSent;
-use App\Filament\Resources\ArsipResource\RelationManagers\CopyFileRelationManager;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
+use stdClass;
 
 class ArsipResource extends Resource
 {
@@ -58,7 +58,7 @@ class ArsipResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['cif', 'kode', 'nama_lengkap','tanggal_mulai'];
+        return ['cif', 'kode', 'nama_lengkap', 'tanggal_mulai'];
     }
 
     protected static ?string $slug = 'arsip';
@@ -223,12 +223,16 @@ class ArsipResource extends Resource
                         ->visible(fn(Arsip $record) => !Riwayat::where('arsip_id', $record->id)->where('jenis', 'Keluar')->exists()),
                     Action::make('markAsPaid')
                         ->label('Lunas Topup')
-                        ->action(function ($record) {
+                        ->action(function ($record, array $data) {
 
                             if ($record->status == '0') {
-                                $record->update(['status' => '1']);
+                                $record->update([
+                                    'status' => '1',
+                                    'loker_id' => $data['loker_id'],
+                                ]);
                             }
                             $recipient = auth()->user();
+
                             Notification::make()
                                 ->title('Arsip Lunas!')
                                 ->body('Arsip : ' . $record->kode . ' - ' . $record->nama_lengkap . ' lunas')
@@ -237,6 +241,12 @@ class ArsipResource extends Resource
                             $recipient->save();
 
                         })
+                        ->form([
+                            Select::make('loker_id')
+                                ->label('Loker')
+                                ->options(Loker::all()->pluck('nama', 'id'))
+                                ->searchable(),
+                        ])
                         ->color('success')
                         ->icon('heroicon-s-check')
                         ->requiresConfirmation()
