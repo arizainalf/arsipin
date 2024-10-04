@@ -3,15 +3,14 @@
 namespace App\Filament\Resources\ArsipResource\RelationManagers;
 
 use Filament\Forms;
-use Filament\Tables;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Forms\Components\Select;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Support\Facades\Storage;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Table;
+use Illuminate\Support\Facades\Storage;
 use Webbingbrasil\FilamentCopyActions\Tables\CopyableTextColumn;
 
 class CopyFileRelationManager extends RelationManager
@@ -31,7 +30,7 @@ class CopyFileRelationManager extends RelationManager
                     ->helperText('No. Data (KTP, NPWP, SK, dll)')
                     ->maxLength(255),
                 Select::make('jenis')
-                ->helperText('Asli atau Copy')
+                    ->helperText('Asli atau Copy')
                     ->options([
                         'Asli' => 'Asli',
                         'Copy' => 'Copy',
@@ -55,10 +54,9 @@ class CopyFileRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('nama'),
                 CopyableTextColumn::make('Keterangan')
                     ->label('No. Data')
-                ->successMessage('No. Data Berhasil di salin di clipboard')
-                ->searchable()
-                ->sortable()
-                ->toggleable(),
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('jenis')
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {

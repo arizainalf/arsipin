@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ArsipResource\Pages;
 use App\Filament\Resources\ArsipResource\RelationManagers\CopyFileRelationManager;
 use App\Models\Arsip;
+use App\Models\File;
 use App\Models\Loker;
 use App\Models\Riwayat;
 use Filament\Forms;
@@ -221,10 +222,38 @@ class ArsipResource extends Resource
                         ->color('danger')
                         ->modalWidth(MaxWidth::ExtraLarge)
                         ->visible(fn(Arsip $record) => !Riwayat::where('arsip_id', $record->id)->where('jenis', 'Keluar')->exists()),
+                    Action::make('sk')
+                        ->label('SK Keluar')
+                        ->icon('heroicon-o-document-arrow-up')
+                        ->form([
+                            Textarea::make('catatan')
+                                ->label('Keterangan')
+                                ->rows(5)
+                                ->cols(5),
+                        ])
+                        ->action(function (Arsip $record, array $data) {
+                            $sk = File::where('arsip_id', $record->id)->first();
+                            if (!$sk) {
+                                File::create([
+                                    'arsip_id' => $record->id,
+                                    'catatan' => $data['catatan'],
+                                    'tanggal' => Carbon::now(),
+                                ]);
+                            }
+                            $recipient = auth()->user();
+                            Notification::make()
+                                ->title('SK Keluar')
+                                ->body('SK : ' . $record->kode . ' - ' . $record->nama_lengkap . ' dikeluarkan ke Loker SK')
+                                ->sendToDatabase($recipient);
+                            event(new DatabaseNotificationsSent($recipient));
+                            $recipient->save();
+                        })
+                        ->color('primary')
+                        ->modalWidth(MaxWidth::ExtraLarge)
+                        ->visible(fn(Arsip $record) => !File::where('arsip_id', $record->id)->exists() && $record->status == '1'),
                     Action::make('markAsPaid')
                         ->label('Lunas Topup')
                         ->action(function ($record, array $data) {
-
                             if ($record->status == '0') {
                                 $record->update([
                                     'status' => '1',
