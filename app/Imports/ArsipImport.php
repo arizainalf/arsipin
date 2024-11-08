@@ -17,7 +17,6 @@ class ArsipImport implements ToModel, WithHeadingRow
      */
     public function model(array $row)
     {
-            dd($row);
         if ($row['branch'] == '0209') {
             $kode = $row['deal_type'] . '-' . $row['deal_ref'];
             $existingArsip = Arsip::where('kode', $kode)->first();

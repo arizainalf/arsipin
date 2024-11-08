@@ -48,14 +48,14 @@ class LokerResource extends Resource
                 TextColumn::make('index')->getStateUsing(
                     static function (stdClass $rowLoop, HasTable $livewire): string {
                         return (string) (
-                            $rowLoop->iteration +
-                            ($livewire->tableRecordsPerPage * (
-                                $livewire->getPage() - 1
+                            (int) $rowLoop->iteration +
+                            ((int) $livewire->tableRecordsPerPage * (
+                                (int) $livewire->getPage() - 1
                             ))
                         );
                     }
                 )
-                    ->label('No.'),
+                ->label('No.'),
                 Tables\Columns\TextColumn::make('nama')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -83,7 +83,7 @@ class LokerResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->paginated([25, 50, 100, 'all']);;
+            ->paginated([25, 50, 100, 'all']);
     }
 
     public static function getRelations(): array
