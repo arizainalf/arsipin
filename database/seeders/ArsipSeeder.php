@@ -9,6 +9,6 @@ class ArsipSeeder extends Seeder
 {
     public function run(): void
     {
-        Arsip::factory()->count(50)->create(); // Sesuaikan jumlah data yang diinginkan
+        Arsip::factory()->count(50)->create();
     }
 }

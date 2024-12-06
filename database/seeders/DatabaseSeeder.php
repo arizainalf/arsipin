@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use Database\Seeders\ArsipSeeder;
 use Database\Seeders\LokerSeeder;
 use Database\Seeders\UsersSeeder;
+use Database\Seeders\RiwayatSeeder;
 
 
 class DatabaseSeeder extends Seeder
@@ -19,6 +20,7 @@ class DatabaseSeeder extends Seeder
             UsersSeeder::class,
             LokerSeeder::class,
             ArsipSeeder::class,
+            RiwayatSeeder::class
         ]);
 
     }

@@ -67,7 +67,8 @@ class RiwayatResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('catatan')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->limit(15),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
