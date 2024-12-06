@@ -3,15 +3,11 @@
 namespace App\Filament\Resources\ArsipResource\RelationManagers;
 
 use Filament\Forms;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Storage;
-use Webbingbrasil\FilamentCopyActions\Tables\CopyableTextColumn;
 
 class CopyFileRelationManager extends RelationManager
 {
@@ -29,7 +25,7 @@ class CopyFileRelationManager extends RelationManager
                     ->label('No. Data')
                     ->helperText('No. Data (KTP, NPWP, SK, dll)')
                     ->maxLength(255),
-                Select::make('jenis')
+                Forms\Components\Select::make('jenis')
                     ->helperText('Asli atau Copy')
                     ->options([
                         'Asli' => 'Asli',
@@ -37,7 +33,7 @@ class CopyFileRelationManager extends RelationManager
                     ])
                     ->required()
                     ->default('Copy'),
-                FileUpload::make('gambar')
+                Forms\Components\FileUpload::make('gambar')
                     ->image()
                     ->helperText('Kosongkan jika tidak diisi')
                     ->directory('copy-files')
@@ -52,7 +48,7 @@ class CopyFileRelationManager extends RelationManager
             ->recordTitleAttribute('nama')
             ->columns([
                 Tables\Columns\TextColumn::make('nama'),
-                CopyableTextColumn::make('Keterangan')
+                Tables\Columns\TextColumn::make('keterangan')
                     ->label('No. Data')
                     ->searchable()
                     ->sortable()
@@ -63,7 +59,7 @@ class CopyFileRelationManager extends RelationManager
                         'Asli' => 'success',
                         'Copy' => 'primary',
                     }),
-                ImageColumn::make('gambar')
+                Tables\Columns\ImageColumn::make('gambar')
                     ->label('Gambar')
                     ->defaultImageUrl(url('storage/images/placeholder.png'))
                     ->url(fn($record) => $record->gambar ? Storage::url($record->gambar) : null)
