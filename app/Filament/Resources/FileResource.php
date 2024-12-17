@@ -2,23 +2,23 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\FileResource\Pages;
-use App\Models\Arsip;
-use App\Models\File;
-use Carbon\Carbon;
+use stdClass;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Notifications\Events\DatabaseNotificationsSent;
-use Filament\Notifications\Notification;
-use Filament\Resources\Resource;
-use Filament\Support\Enums\MaxWidth;
+use App\Models\File;
 use Filament\Tables;
+use App\Models\Arsip;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Illuminate\Support\Carbon;
+use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\ActionGroup;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Contracts\HasTable;
-use Filament\Tables\Table;
-use stdClass;
+use Filament\Notifications\Notification;
+use Filament\Tables\Actions\ActionGroup;
+use App\Filament\Resources\FileResource\Pages;
+use Filament\Notifications\Events\DatabaseNotificationsSent;
 
 class FileResource extends Resource
 {
@@ -28,7 +28,7 @@ class FileResource extends Resource
 
     protected static ?string $slug = 'files';
 
-    protected static ?string $navigationLabel = 'SK';
+    protected static ?string $navigationLabel = 'Pengambilan SK';
 
     protected static ?int $navigationSort = 4;
 
@@ -43,7 +43,8 @@ class FileResource extends Resource
                     ->lazy()
                     ->required(),
                 Forms\Components\DatePicker::make('tanggal')
-                    ->required(),
+                    ->required()
+                    ->default(Carbon::now()),
                 Forms\Components\DatePicker::make('tanggal_diambil'),
                 Forms\Components\TextInput::make('catatan')
                     ->maxLength(255),
